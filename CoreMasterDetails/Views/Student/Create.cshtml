@@ -1,0 +1,119 @@
+﻿@model EmployeeViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<hr />
+<div class="card">
+    <div class="card-header bg-primary text-uppercase text-white" style="height:45px">
+        <h4>Add Employee Info</h4>
+    </div>
+    <form id="createForm" asp-action="Create" enctype="multipart/form-data">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label asp-for="EmployeeName" class="control-label"></label>
+                    <input asp-for="EmployeeName" class="form-control" />
+                    <span asp-validation-for="EmployeeName" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label asp-for="JoiningDate" class="control-label"></label>
+                    <input asp-for="JoiningDate" class="form-control" />
+                    <span asp-validation-for="JoiningDate" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label asp-for="ReviewNotes" class="control-label"></label>
+                    <select class="form-control country" asp-for="ReviewId" asp-items="@(new SelectList(Model.PerformanceReviews,"ReviewId","ReviewNotes"))"> <option value="0">---Select One---</option></select>
+
+                    <span asp-validation-for="ReviewId" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label asp-for="MobileNo" class="control-label"></label>
+                    <input asp-for="MobileNo" class="form-control" />
+                    <span asp-validation-for="MobileNo" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label asp-for="IsDeleted" class="control-label"></label>
+                    <input type="checkbox" asp-for="IsDeleted" />
+                    <span asp-validation-for="IsDeleted" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-md-6 btn-group">
+                <div class="form-group col-8 p-0">
+                    <label asp-for="ProfileFile" class="control-label"></label>
+                    <div class="customFile">
+                        <input asp-for="ProfileFile" type="file" class="custom-file-input" id="customFile" onchange="document.getElementById('PreviewPhoto').src= window.URL.createObjectURL(this.files[0])" />
+                        <label class="custom-file-label invisible" for="customFile">Choose File</label>
+                    </div>
+                </div>
+                <div class="form-group col-4">
+                    <img id="PreviewPhoto" src="~/images/noimage.png" width="125" height="125" style="border:1px;margin-top:20px;" />
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div id="modulesTableContainer">
+                    @Html.Partial("_DepartmentTable", Model.Departments)
+                </div>
+                <div class="form-group" style="text-align: center;">
+                    <button type="button" class="btn btn-primary" onclick="AddModule()">Add Departments</button>
+                </div>
+            </div>
+            <div class="col-12 btn-group">
+                <div class="col-6 form-group">
+                    <div class="col-6-group text-right p-2">
+                        <a asp-action="Index" class="btn btn-secondary">&nbsp;Back to List&nbsp;</a>
+                        <input id="submitForm" type="submit" value="Add Student Info" class="btn btn-success" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    $(".custom-file-input").on("change", function () {
+        var fileName = $(this).val().split("\\").pop();
+        $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+    });
+
+    function DeleteItem(btn) {
+        $(btn).closest('tr').remove();
+    }
+
+    function AddModule() {
+        var lastRowIndex = parseInt($("#hdnLastIndex").val());
+        var newRow = '<tr>' +
+            '<td><input type="text" class="form-control" name="Modules[' + lastRowIndex + '].ModuleName" /></td>' +
+            '<td><input type="number" class="form-control" name="Modules[' + lastRowIndex + '].Duration" /></td>' +
+            '<td><button type="button" class="btn btn-danger" onclick="DeleteItem(this)">Delete</button></td>' +
+            '</tr>';
+        $("#ExpTable tbody").append(newRow);
+        $("#hdnLastIndex").val(lastRowIndex + 1);
+    }
+
+    $("#createForm").submit(function (event) {
+        event.preventDefault();
+        var formData = new FormData(this);
+
+        $.ajax({
+            type: "post",
+            url: "/Emplyee/Create",
+            contentType: false,
+            processData: false,
+            data: formData,
+            success: function (data) {
+                alert("Created");
+            },
+            error: function (err) {
+                alert("Error Occurred");
+            }
+        });
+    });
+</script>

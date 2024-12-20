@@ -1,0 +1,19 @@
+﻿@model Employee
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Department Name</th>
+            <th>Department Budget</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var exp in Model.Departments)
+        {
+            <tr>
+                <td>@Html.DisplayFor(e => exp.DepartmentName)</td>
+                <td>@Html.DisplayFor(e => exp.Budget)</td>
+            </tr>
+        }
+    </tbody>
+</table>

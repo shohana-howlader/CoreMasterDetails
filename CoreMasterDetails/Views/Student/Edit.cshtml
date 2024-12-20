@@ -1,0 +1,123 @@
+﻿ @model EmployeeViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<hr />
+<div class="card">
+    <div class="card-header">
+        <h4 style="text-align:center">Update Employee Info</h4>
+    </div>
+    <form id="editForm" asp-action="Edit" enctype="multipart/form-data">
+        <div class="row">
+            <div class="col-6">
+                @Html.HiddenFor(x => x.EmployeeId)
+                <div class="form-group">
+                    <label asp-for="EmployeeName" class="control-label"></label>
+                    <input asp-for="EmployeeName" class="form-control" />
+                    <span asp-validation-for="EmployeeName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="JoiningDate" class="control-label"></label>
+                    <input asp-for="JoiningDate" class="form-control" />
+                    <span asp-validation-for="JoiningDate" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="MobileNo" class="control-label"></label>
+                    <input asp-for="MobileNo" class="form-control" />
+                    <span asp-validation-for="MobileNo" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="IsDeleted" class="control-label"></label>
+                    <input type="checkbox" asp-for="IsDeleted" />
+                    <span asp-validation-for="IsDeleted" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label>Department</label>
+                    <select class="form-control" asp-for="ReviewId" asp-items="@(new SelectList(Model.Departments, "ReviewId", "ReviewNotes"))"></select>
+                    <span asp-validation-for="ReviewId" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <div>
+                        <img id="PreviewPhoto" src="~/images/@Model.ImageUrl" width="125" height="125" style="border:1px;margin-top:20px;" />
+                    </div>
+                    <label asp-for="ProfileFile" class="control-label"></label>
+                    <div class="customFile">
+                        <input asp-for="ProfileFile" type="file" class="custom-file-input" id="customFile" onchange="document.getElementById('PreviewPhoto').src= window.URL.createObjectURL(this.files[0])" />
+                        <label class="custom-file-label invisible" for="customFile"></label>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="col-md-12">
+                    <h5 style="text-align:center">Edit Departments</h5>
+                    <div id="modulesTableContainer">
+                        @Html.Partial("_ModulesTable", Model.Departments)
+                    </div>
+                    <div class="form-group" style="text-align: center;">
+                        <button type="button" class="btn btn-primary add-module-button" onclick="AddModule()">Add Departments</button>
+                    </div>
+                </div>
+                <input type="hidden" id="hdnLastIndex" value="0" />
+            </div>
+            <div class="col-6-group text-right p-2">
+                <a asp-action="Index" class="btn btn-secondary">&nbsp;Back to List&nbsp;</a>
+                <input id="submitForm" type="submit" value="Update Student Info" class="btn btn-primary" />
+            </div>
+        </div>
+    </form>
+</div>
+<script src="~/jquery/jquery.min.js"></script>
+<script>
+    $(".custom-file-input").on("change", function () {
+        var fileName = $(this).val().split("\\").pop();
+        $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+        document.getElementById('PreviewPhoto').src = window.URL.createObjectURL(this.files[0]);
+    });
+
+    function DeleteItem(btn) {
+        $(btn).closest('tr').remove();
+    }
+
+    function AddModule() {
+        var lastRowIndex = parseInt($("#hdnLastIndex").val());
+        var newRow =
+            '<tr>' +
+            '<td><input type="text" class="form-control" name="Modules[' + lastRowIndex + '].ModuleName" /></td>' +
+            '<td><input type="number" class="form-control" name="Modules[' + lastRowIndex + '].Duration" /></td>';
+        if (lastRowIndex > 0) {
+            newRow += '<td><button type="button" class="btn btn-danger" onclick="DeleteItem(this)">Remove</button></td>';
+        } else {
+            newRow += '<td></td>';
+        }
+
+        newRow += '</tr>';
+
+        $("#ExpTable tbody").append(newRow);
+        $("#hdnLastIndex").val(lastRowIndex + 1);
+
+        if (lastRowIndex === 0) {
+            $(".add-module-button").hide();
+        }
+    }
+
+
+    $("#submitForm").click(function () {
+        var formData = new FormData(document.getElementById("editForm"));
+
+        $.ajax({
+            type: "post",
+            url: "/Employee/Edit",
+            contentType: false,
+            processData: false,
+            data: formData,
+            success: function (data) {
+                alert("Edited");
+            },
+            error: function (err) {
+                alert("Error Occurred");
+            }
+        });
+    });
+</script>

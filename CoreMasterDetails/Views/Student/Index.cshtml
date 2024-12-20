@@ -1,0 +1,35 @@
+﻿@model IEnumerable<Employee>
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+
+<div class="row">
+    <p>
+        <a href="@Url.Action("Create", "Employee")" id="btnCreate" class="btn btn-primary">Add Employee Info</a>
+    </p>
+    <h4>Employee List</h4>
+    @foreach (var item in Model)
+    {
+        <div class="card mb-2">
+            <div class="card-header d-flex justify-content-between">
+                <img src="~/Images/@item.ImageUrl" width="50" height="50" class="rounded">
+                <label class="m-2"><b>Name:</b> @Html.DisplayFor(m => item.EmployeeName)</label>
+                <br />
+                <label class="m-2"><b>Mobile:</b> @Html.DisplayFor(m => item.MobileNo)</label><br>
+                <label class="m-2"><b>Joining Date:</b> @item.JoiningDate.ToShortDateString()</label><br>
+                <label class="m-2"><b>IsDeleted?:</b> @Html.DisplayFor(m => item.IsDeleted)</label><br>
+                <label class="m-2"><b>Review Notes:</b> @Html.DisplayFor(m => item.PerformanceReview.ReviewNotes)</label>
+            </div>
+            <div>
+                <a href="@Url.Action("Edit", "Employee", new { id = item.EmployeeId })" class="btn btn-secondary">Edit Employee Info</a>|
+                <a href="@Url.Action("Delete", "Employee", new { id = item.EmployeeId })" class="btn btn-danger">Delete Employee Info</a>
+            </div>
+            <div class="card-body">
+                @Html.Partial("_IndexDepartmentTable", item)
+            </div>
+        </div>
+    }
+</div>
